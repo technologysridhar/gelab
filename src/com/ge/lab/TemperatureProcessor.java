@@ -1,12 +1,9 @@
 package com.ge.lab;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
-
-
 public class TemperatureProcessor   implements  Runnable { 	 
 		TemparatureSensorData sensordata;
 		List<String> processedresult=new ArrayList<String>();
@@ -41,7 +38,7 @@ public class TemperatureProcessor   implements  Runnable {
 				
 				cleanupPreviousResults();
 			    try {
-					Thread.sleep(300);	//3,600,000
+					Thread.sleep(60*60);	//3,600,000
 					int endpoint=sensordata.tempdata.size();
 					 
 					for(int idxpoints=startpoint;idxpoints<endpoint;idxpoints++){
@@ -50,6 +47,7 @@ public class TemperatureProcessor   implements  Runnable {
 					}
 					
 					float avg=computeAverageTemparature(startpoint,endpoint);
+					StoreIntoDB();
 					StoreIntoDB(avg);
 				} catch (InterruptedException e) {			 
 					e.printStackTrace();
@@ -71,21 +69,13 @@ public class TemperatureProcessor   implements  Runnable {
 			PreparedStatement psInsert=null;
 			 
 					 psInsert=con.prepareStatement("insert into SampleTable2 values(?)");  
-		            //date hr average
-					 
-					 //Date date = new Date();   // given date
-					 
-					 
-					psInsert.setString(1,"avg");   
-			      
-		 
+		          
+					psInsert.setFloat(1,avg);   
 			  
 					psInsert.executeUpdate();   
-			con.close();  
+					con.close();  
 			
-		}
-		
-		
+		} 
 		
 		
 		public  void StoreIntoDB()throws Exception{
@@ -101,14 +91,12 @@ public class TemperatureProcessor   implements  Runnable {
 			for(int i=0;i<processedresult.size();i++){
 					 psInsert=con.prepareStatement("insert into SampleTable values(?)");  
 		 
-					psInsert.setString(1,"Ratan");   
+					psInsert.setString(1,processedresult.get(i));   
 			        psInsert.addBatch();
-	            
 			} 
 			  
 			psInsert.executeUpdate();   
 			con.close();  
-			
 		}
 		
 		public void cleanupPreviousResults(){

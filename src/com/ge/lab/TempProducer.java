@@ -15,9 +15,7 @@ public class TempProducer  implements Runnable{
 			try
 			{
 			    Thread.sleep(3000);  
-			    Random rand = new Random(); 
-			    
-		        // Generate random integers in range 0 to 999 
+			    Random rand = new Random();  
 		        float temp = rand.nextInt(100); 
 		        sensordata.tempdata.add(temp); 
 		        System.out.println(sensordata); 
